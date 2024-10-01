@@ -38,6 +38,7 @@ public class SocialMediaController {
         app.post("/messages", this::newMessageHandler);
         app.get("/messages", this::retrieveAllMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageByIdHandler);
+        
         return app;
     }
 

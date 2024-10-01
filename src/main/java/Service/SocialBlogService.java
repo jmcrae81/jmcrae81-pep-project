@@ -10,6 +10,7 @@ public class SocialBlogService{
     SocialBlogDAO socialBlogDAO;
 
     public SocialBlogService(){
+        
         socialBlogDAO = new SocialBlogDAO();
     }
 

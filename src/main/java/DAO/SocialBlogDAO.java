@@ -16,7 +16,6 @@ public class SocialBlogDAO{
         String pass = newAccount.getPassword();
        
         boolean validAccount = testAccountValidity(name, pass);
-        queryTable();
 
         if(validAccount){
             try{
