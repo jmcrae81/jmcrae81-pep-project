@@ -9,8 +9,6 @@ import Model.Account;
 import Model.Message;
 import Service.SocialBlogService;
 
-import java.io.*;
-
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
  * found in readme.md as well as the test cases. You should
@@ -38,14 +36,10 @@ public class SocialMediaController {
         app.post("/messages", this::newMessageHandler);
         app.get("/messages", this::retrieveAllMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageByIdHandler);
-<<<<<<< HEAD
-        
-=======
         app.delete("/messages/{message_id}", this::deleteMessageByIdHandler);
-        app.patch("/messages/{message_id}",this::updateMessageByIdHandler);
+        app.patch("/messages/{message_id}", this::updateMessageByIdHandler);
         app.get("/accounts/{account_id}/messages", this::getMessagesByUserHandler);
-
->>>>>>> 20230c3 (version 0.1)
+        
         return app;
     }
 
@@ -148,17 +142,5 @@ public class SocialMediaController {
         ctx.json(sbService.getMessagesByUser(accountId));
         ctx.status(200);
 
-    }
-
-    private void writeToFile(String fileName, String output){
-
-        try{
-            FileWriter fw = new FileWriter(fileName, true);
-            String text = output + "\n";
-            fw.write(text, 0, text.length());
-            fw.close();
-        }catch(IOException e){
-            System.out.println(e.getMessage());
-        }
     }
 }

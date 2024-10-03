@@ -6,7 +6,6 @@ import Util.ConnectionUtil;
 
 import java.sql.*;
 import java.util.*;
-import java.io.*;
 
 public class SocialBlogDAO{
     public Account registerNewUser(Account newAccount){
@@ -45,6 +44,7 @@ public class SocialBlogDAO{
     public Account userLogin(Account user){
         String query = "SELECT * FROM Account";
         Connection connection = ConnectionUtil.getConnection();
+
         try{
             PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
@@ -162,7 +162,6 @@ public class SocialBlogDAO{
     }
 
     public Message deleteMessageById(int messageId){
-        
         Message messageToDelete = getMessageById(messageId);
 
         try{
@@ -340,7 +339,6 @@ public class SocialBlogDAO{
             String query = "SELECT message_id FROM Message";
             PreparedStatement ps = connection.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
-
             int currentId = 0;
             
             if(rs.next()){
@@ -355,61 +353,7 @@ public class SocialBlogDAO{
         }
 
         return false;
-    }
-
-    public void queryTable(){
-
-        Connection connection = ConnectionUtil.getConnection();
-        String currentAccounts = new String();
-        String query = "SELECT * FROM Account";
-        
-        try{
-            FileWriter fw = new FileWriter("query.txt", true);
-            
-            PreparedStatement psQuery = connection.prepareStatement(query);
-            ResultSet rs = psQuery.executeQuery();
-
-            String rsName = "";
-            String rsPass = "";
-            int rsAccountID = 0;
-            int rsRowNum = 0;
-
-            while(rs.next()){
-                rsRowNum = rs.getRow();
-                rsAccountID = rs.getInt("account_id");
-                rsName = rs.getString("username");
-                rsPass = rs.getString("password");
-
-                currentAccounts = "Row: " + rsRowNum + " Account: " + rsAccountID + " Name: " + 
-                    rsName + " Pass: " + rsPass + "\n";
-                   
-                fw.write(currentAccounts, 0, currentAccounts.length());
-        }
-
-        fw.close();
-        }catch(IOException e){
-            System.out.println(e);
-        }catch(SQLException e){
-            System.out.println(e);
-        }
-    }
-
-    public void writeToFile(String fileName, String inputToFile){
-        String result = new String();
-
-        try{
-            FileWriter writer = new FileWriter(fileName, true);
-            result = inputToFile + "\n";
-
-            writer.write(result);
-            writer.close();
-        }catch(IOException e){
-            System.out.println(e);
-        }
-    }
-
-            
-            
+    }   
 
 }
 

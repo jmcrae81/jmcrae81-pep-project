@@ -45,6 +45,5 @@ public class SocialBlogService{
     public List<Message> getMessagesByUser(int accountId){
         return this.socialBlogDAO.getMessagesByUser(accountId);
     }
-
 }
 
