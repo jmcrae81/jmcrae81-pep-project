@@ -31,7 +31,20 @@ public class SocialBlogService{
     }
     
     public Message getMessageById(int messageId){
-        return this.getMessageById(messageId);
+        return this.socialBlogDAO.getMessageById(messageId);
     }
+
+    public Message deleteMessageById(int messageId){
+        return this.socialBlogDAO.deleteMessageById(messageId);
+    }
+
+    public Message updateMessageById(int messageNum, String messageText){
+        return this.socialBlogDAO.updateMessageById(messageNum, messageText);
+    }
+    
+    public List<Message> getMessagesByUser(int accountId){
+        return this.socialBlogDAO.getMessagesByUser(accountId);
+    }
+
 }
 

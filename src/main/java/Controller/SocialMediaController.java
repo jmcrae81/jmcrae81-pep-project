@@ -38,7 +38,14 @@ public class SocialMediaController {
         app.post("/messages", this::newMessageHandler);
         app.get("/messages", this::retrieveAllMessagesHandler);
         app.get("/messages/{message_id}", this::getMessageByIdHandler);
+<<<<<<< HEAD
         
+=======
+        app.delete("/messages/{message_id}", this::deleteMessageByIdHandler);
+        app.patch("/messages/{message_id}",this::updateMessageByIdHandler);
+        app.get("/accounts/{account_id}/messages", this::getMessagesByUserHandler);
+
+>>>>>>> 20230c3 (version 0.1)
         return app;
     }
 
@@ -92,13 +99,66 @@ public class SocialMediaController {
     private void retrieveAllMessagesHandler(Context ctx){
         ctx.json(sbService.getAllMessages());
         ctx.status(200);
+        
     }
 
-    private void getMessageByIdHandler(Context ctx){
+    private void getMessageByIdHandler(Context ctx)throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper(); 
         int id = Integer.parseInt(ctx.pathParam("message_id"));
+        Message returnedMessage = sbService.getMessageById(id);
+        
+        if(returnedMessage != null){
+            ctx.json(mapper.writeValueAsString(returnedMessage));
+        }
 
-        ctx.json(sbService.getMessageById(id));
         ctx.status(200);
 
+    }
+
+    private void deleteMessageByIdHandler(Context ctx)throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper(); 
+        int id = Integer.parseInt(ctx.pathParam("message_id"));
+        Message deletedMessage = sbService.deleteMessageById(id);
+        
+        if(deletedMessage != null){
+            ctx.json(mapper.writeValueAsString(deletedMessage));
+        }
+
+        ctx.status(200);
+    }
+    private void updateMessageByIdHandler(Context ctx)throws JsonProcessingException{
+        ObjectMapper mapper = new ObjectMapper();
+        Message input = mapper.readValue(ctx.body(), Message.class);
+        int messageNum = Integer.parseInt(ctx.pathParam("message_id"));
+
+        Message updatedMessage = sbService.updateMessageById(messageNum, input.getMessage_text());
+
+        if(updatedMessage == null){
+            ctx.status(400);
+        }else{
+            ctx.json(mapper.writeValueAsString(updatedMessage));
+            ctx.status(200);
+        }
+    }
+    
+    private void getMessagesByUserHandler(Context ctx){
+        
+        int accountId = Integer.parseInt(ctx.pathParam("account_id"));
+
+        ctx.json(sbService.getMessagesByUser(accountId));
+        ctx.status(200);
+
+    }
+
+    private void writeToFile(String fileName, String output){
+
+        try{
+            FileWriter fw = new FileWriter(fileName, true);
+            String text = output + "\n";
+            fw.write(text, 0, text.length());
+            fw.close();
+        }catch(IOException e){
+            System.out.println(e.getMessage());
+        }
     }
 }

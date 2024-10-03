@@ -148,6 +148,10 @@ public class SocialBlogDAO{
             while(rs.next()){
                 Message requestedMessage = new Message(rs.getInt("message_id"), rs.getInt("posted_by"),
                         rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+
+                String results = rs.getInt("message_id") + " " +  rs.getInt("posted_by") + " " +
+                        rs.getString("message_text") + " " + rs.getLong("time_posted_epoch") + "\n";
+
                 return requestedMessage;
             }
         }catch(SQLException e){
@@ -157,11 +161,113 @@ public class SocialBlogDAO{
         return null;
     }
 
+    public Message deleteMessageById(int messageId){
+        
+        Message messageToDelete = getMessageById(messageId);
+
+        try{
+            Connection connection = ConnectionUtil.getConnection();
+            String deleteMessage = "DELETE FROM Message WHERE message_id = ?";
+            
+            PreparedStatement ps = connection.prepareStatement(deleteMessage);
+            ps.setInt(1, messageId);
+            ps.executeUpdate();            
+
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return messageToDelete;
+    }
+
+    public Message updateMessageById(int messageNumber, String messageText){
+        if(passesMessageConstraints(messageText) && isValidMessageId(messageNumber)){
+            try{
+                String updateStatement = "UPDATE Message SET message_text = ? WHERE message_id = ?";
+                Connection connection = ConnectionUtil.getConnection();
+                PreparedStatement ps = connection.prepareStatement(updateStatement);
+
+                ps.setString(1, messageText);
+                ps.setInt(2, messageNumber);
+                ps.executeUpdate();
+
+                String query = "SELECT * from Message WHERE message_id = ?";
+                ps = connection.prepareStatement(query);
+                ps.setInt(1, messageNumber);
+                ResultSet rs = ps.executeQuery();
+                
+                int idForUpdatedMessage = 0;
+                int postedByForUpdatedMessage = 0;
+                String updatedMessageText = new String();
+                long timeForUpdatedMessage = 0;
+
+                if(rs.next()){
+                    idForUpdatedMessage = rs.getInt("message_id");
+                    postedByForUpdatedMessage = rs.getInt("posted_by");
+                    updatedMessageText = rs.getString("message_text");
+                    timeForUpdatedMessage = rs.getLong("time_posted_epoch");
+
+                    Message updatedMessage = new Message(idForUpdatedMessage, postedByForUpdatedMessage,
+                            updatedMessageText, timeForUpdatedMessage);
+                    return updatedMessage;
+                }
+
+            }catch(SQLException e){
+                System.out.println(e.getMessage());
+            }
+        }
+
+        return null;
+    }
+
+    public List<Message> getMessagesByUser(int accountId){
+        
+        try{
+            int rsId = 0;
+            int rsPostedBy = 0;
+            String rsMessage = new String();
+            long rsTime = 0;
+
+            Connection connection = ConnectionUtil.getConnection();
+            String query = "SELECT * FROM Message WHERE posted_by = ?";
+            List<Message> messages = new ArrayList<>();
+
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setInt(1, accountId);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                rsId = rs.getInt("message_id");
+                rsPostedBy = rs.getInt("posted_by");
+                rsMessage = rs.getString("message_text");
+                rsTime = rs.getLong("time_posted_epoch");
+
+                Message msg = new Message(rsId, rsPostedBy, rsMessage, rsTime);
+                messages.add(msg);
+            }
+
+            return messages;
+
+        }catch(SQLException e){
+           System.out.println(e.getMessage());
+        } 
+
+        return null;
+    }
+
+    private boolean passesMessageConstraints(String text){
+        if(text.equals(null) || text.length() == 0){
+            return false;
+        }
+
+        return true;
+    }
+            
     private boolean testAccountValidity(String name, String pass){
         // Username cannot be blank
-        if(name.equals(null) || name.length() == 0){
+        if(name.length() == 0 || name.equals("")){
            return false;
-        }
+        } 
 
         // Password must be at least 4 characters long
         if(pass.length() < 4){
@@ -171,24 +277,10 @@ public class SocialBlogDAO{
         Connection connection = ConnectionUtil.getConnection();
 
         // Can't use a Username that's already been taken
-        try{
-            String sql ="SELECT username FROM Account;";
-
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            ResultSet rs = preparedStatement.executeQuery(); 
-            String currentUsername = new String();
-
-            while(rs.next()){
-                currentUsername = rs.getString("username");
-
-                if(currentUsername.equals(name)){
-                    return false;
-                }
-            }
-        }catch(SQLException e){
-            System.out.println(e.getMessage());
+        if(isValidUser(name)){
+            return false;
         }
-
+    
         return true;
     }
 
@@ -218,6 +310,51 @@ public class SocialBlogDAO{
         }
 
         return true;
+    }
+
+    private boolean isValidUser(String userName){
+        try{
+            Connection connection = ConnectionUtil.getConnection();
+            String query = "SELECT username FROM Account";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            
+            String currentUser = new String();
+            while(rs.next()){
+                currentUser = rs.getString("username");
+                if(currentUser.equals(userName)){
+                    return true;
+                }
+            }
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return false;
+
+    }
+
+    private boolean isValidMessageId(int messageId){
+        try{
+            Connection connection = ConnectionUtil.getConnection();
+            String query = "SELECT message_id FROM Message";
+            PreparedStatement ps = connection.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+
+            int currentId = 0;
+            
+            if(rs.next()){
+                currentId = rs.getInt("message_id");
+                if(messageId == currentId){
+                    return true;
+                }
+            }
+
+        }catch(SQLException e){
+            System.out.println(e.getMessage());
+        }
+
+        return false;
     }
 
     public void queryTable(){
