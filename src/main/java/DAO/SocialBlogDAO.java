@@ -36,8 +36,7 @@ public class SocialBlogDAO{
             }catch(SQLException e){ 
                 System.out.println(e.getMessage());
             }
-        }
-        
+        } 
        return null; 
     }
 
@@ -58,7 +57,6 @@ public class SocialBlogDAO{
                rsPass = rs.getString("password");
                rsAccount_id = rs.getInt("account_id");
                
-
                if(rsName.equals(user.getUsername()) && rsPass.equals(user.getPassword())){
                    return new Account(rsAccount_id, rsName, rsPass);
                }
@@ -86,7 +84,6 @@ public class SocialBlogDAO{
             ps.setInt(1, postedBy);
             ps.setString(2, text);
             ps.setLong(3, timePosted);
-
             ps.executeUpdate();
 
             ResultSet rsKeys = ps.getGeneratedKeys();
@@ -101,7 +98,6 @@ public class SocialBlogDAO{
         }
 
         return null;
-
     }
 
     public List<Message> getAllMessages(){
@@ -220,7 +216,6 @@ public class SocialBlogDAO{
     }
 
     public List<Message> getMessagesByUser(int accountId){
-        
         try{
             int rsId = 0;
             int rsPostedBy = 0;
@@ -244,7 +239,6 @@ public class SocialBlogDAO{
                 Message msg = new Message(rsId, rsPostedBy, rsMessage, rsTime);
                 messages.add(msg);
             }
-
             return messages;
 
         }catch(SQLException e){
@@ -272,8 +266,6 @@ public class SocialBlogDAO{
         if(pass.length() < 4){
             return false;
         }
-
-        Connection connection = ConnectionUtil.getConnection();
 
         // Can't use a Username that's already been taken
         if(isValidUser(name)){
@@ -330,7 +322,6 @@ public class SocialBlogDAO{
         }
 
         return false;
-
     }
 
     private boolean isValidMessageId(int messageId){

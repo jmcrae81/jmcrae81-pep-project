@@ -93,7 +93,6 @@ public class SocialMediaController {
     private void retrieveAllMessagesHandler(Context ctx){
         ctx.json(sbService.getAllMessages());
         ctx.status(200);
-        
     }
 
     private void getMessageByIdHandler(Context ctx)throws JsonProcessingException{
@@ -106,7 +105,6 @@ public class SocialMediaController {
         }
 
         ctx.status(200);
-
     }
 
     private void deleteMessageByIdHandler(Context ctx)throws JsonProcessingException{
@@ -117,7 +115,6 @@ public class SocialMediaController {
         if(deletedMessage != null){
             ctx.json(mapper.writeValueAsString(deletedMessage));
         }
-
         ctx.status(200);
     }
     private void updateMessageByIdHandler(Context ctx)throws JsonProcessingException{
@@ -126,7 +123,6 @@ public class SocialMediaController {
         int messageNum = Integer.parseInt(ctx.pathParam("message_id"));
 
         Message updatedMessage = sbService.updateMessageById(messageNum, input.getMessage_text());
-
         if(updatedMessage == null){
             ctx.status(400);
         }else{
@@ -135,12 +131,9 @@ public class SocialMediaController {
         }
     }
     
-    private void getMessagesByUserHandler(Context ctx){
-        
+    private void getMessagesByUserHandler(Context ctx){       
         int accountId = Integer.parseInt(ctx.pathParam("account_id"));
-
         ctx.json(sbService.getMessagesByUser(accountId));
         ctx.status(200);
-
     }
 }
